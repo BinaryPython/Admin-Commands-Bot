@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 intents = discord.Intents.default()
 intents.members = True
+intents.messages = True
 
 member_penalties = {}
 
@@ -27,6 +28,60 @@ async def on_disconnect():
 	print("-------------------------")
 
 
+
+################################################################################
+# Filter Speech - Command that means that a user's messages cannot contain     #
+# any profanity. It will delete messages that contain swear words              #
+################################################################################
+@bot.event
+async def on_message(message):
+	# This message came from the bot? We don't want to respond to it, then
+	if message.author == bot.user:
+		return
+
+	if message.author.id in member_penalties.keys():
+		penalty_name, penalty_time, penalty_data= member_penalties[message.author.id]
+
+		curTime = datetime.datetime.utcnow()
+
+		if curTime > penalty_time:
+			del member_penalties[message.author.id]
+			return False
+
+		if penalty_name == "filter_speech":
+			forbiddenWords = ["fuck","cock","dick","ass","cunt"]
+
+			if any(word in message.content for word in forbiddenWords):
+				await message.channel.send("<@" + str(message.author.id) + "> Your Potty Mouth Privliges have been revoked!")
+				await message.delete()
+
+	# We have to use this to keep processing commands, even if a message comes through
+	await bot.process_commands(message)
+
+
+@bot.command()
+async def filterSpeech(ctx: commands.Context, member:discord.Member):
+	# Set member penalty so the filtering starts working
+
+	if ctx.author.guild_permissions.administrator == False:
+		await ctx.send("You don't have permissions to use this command.")
+		return False
+
+	#if time == None:
+	revertTime = datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+	# else:
+	# 	revertTime = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+
+	member_penalties[member.id] = ("filter_speech",revertTime,"")
+	
+	await ctx.send("<@" + str(member.id) + ">, your speech is filtered from curse words for the next 5 minutes.")
+
+
+
+###############################################################################
+# randomName Command - Changes a users name to something random and keeps it  #
+# that way, even if the user tries to change it, for a certain amount of time #
+###############################################################################
 @bot.event
 async def on_member_update(before,after):
 	if before.id in member_penalties.keys():

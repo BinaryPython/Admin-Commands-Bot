@@ -6,7 +6,10 @@
  For those interested, I have the discord library installed on my local environment via a Python Virtual Environment or venv, just to keep my regular install uncluttered by crap.
 
 ## Current Plans
-- [ ] Command that allows Admins of a server to randomize a certain user's display name on the server and prevent them from manually changing it back for a certain amount of time
+- [x] Command that allows Admins of a server to randomize a certain user's display name on the server and prevent them from manually changing it back for a certain amount of time
+- [ ] Filter Speech - Stop people from using curse words in chat by deleting messages that conain them
+    - [ ] Maybe have an option where any curse word messasges are deleted, but the bot re-words the user's message to be more appropriate. Like "damn" turns into "dang", etc...
+- [ ] "Russian Roulette" Banning; Emulate a 6-shooter with one loaded chamber. If you "roll the chamber" and it hits the loaded chamber, the user is banned.
 - [ ] Bot Infrastructure
     - [ ] Limit Commmands to be used only by Server Admins
     - [ ] Link up all related command functions in Cogs (?)
